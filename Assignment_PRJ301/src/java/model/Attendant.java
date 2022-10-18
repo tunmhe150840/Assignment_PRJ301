@@ -15,7 +15,7 @@ public class Attendant {
     private int attendantID;
     private Student student;
     private Session session;
-    private boolean status;
+    private Boolean status;
     private Date recordTime;
 
     public Attendant() {
@@ -45,11 +45,11 @@ public class Attendant {
         this.session = session;
     }
 
-    public boolean isStatus() {
+    public Boolean isStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(Boolean status) {
         this.status = status;
     }
 

@@ -28,7 +28,7 @@ public class SessionDBContext extends DBContext<Session> {
     public ArrayList<Session> filter(String stdCode, Date from, Date to) {
         ArrayList<Session> sessions = new ArrayList<>();
         try {
-            String sql = "Select s.SessionID,s.SessionName,s.Date,s.Attended\n"
+            String sql = "Select s.SessionID,s.Date,s.Attended\n"
                     + ",g.GroupID,g.GroupName,g.CourseCode\n"
                     + ",st.StudentCode,st.FullName\n"
                     + ",i.InstructorCode,i.InstructorName\n"
@@ -58,14 +58,13 @@ public class SessionDBContext extends DBContext<Session> {
                 TimeSlot t = new TimeSlot();
                 session.setSessionID(rs.getInt("SessionID"));
                 session.setDate(rs.getDate("Date"));
-                session.setSessionName(rs.getString("SessionName"));
                 session.setAttended(rs.getBoolean("Attended"));
-                
+
                 s.setStudentCode(rs.getString("StudentCode"));
                 s.setFullName(rs.getNString("FullName"));
                 students.add(s);
                 g.setStudents(students);
-                
+
                 i.setInstructorCode(rs.getString("InstructorCode"));
                 i.setInstructorName(rs.getNString("InstructorName"));
                 session.setInstructor(i);

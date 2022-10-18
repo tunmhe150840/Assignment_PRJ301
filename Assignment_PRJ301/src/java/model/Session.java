@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class Session {
 
     private int sessionID;
-    private String sessionName;
+    private int index;
     private Group group;
     private Instructor instructor;
     private TimeSlot timeslot;
@@ -50,11 +50,6 @@ public class Session {
     public Session() {
     }
 
-    public Session(int sessionID, String sessionName) {
-        this.sessionID = sessionID;
-        this.sessionName = sessionName;
-    }
-
     public int getSessionID() {
         return sessionID;
     }
@@ -63,12 +58,12 @@ public class Session {
         this.sessionID = sessionID;
     }
 
-    public String getSessionName() {
-        return sessionName;
+    public int getIndex() {
+        return index;
     }
 
-    public void setSessionName(String sessionName) {
-        this.sessionName = sessionName;
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public Group getGroup() {
