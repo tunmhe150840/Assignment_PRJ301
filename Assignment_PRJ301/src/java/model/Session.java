@@ -20,7 +20,7 @@ public class Session {
     private TimeSlot timeslot;
     private Room room;
     private Date date;
-    private boolean attended;
+    private Boolean attended;
     private ArrayList<Attendant> attendances = new ArrayList<>();
 
     public Date getDate() {
@@ -31,11 +31,11 @@ public class Session {
         this.date = date;
     }
 
-    public boolean isAttended() {
+    public Boolean isAttended() {
         return attended;
     }
 
-    public void setAttended(boolean attended) {
+    public void setAttended(Boolean attended) {
         this.attended = attended;
     }
 

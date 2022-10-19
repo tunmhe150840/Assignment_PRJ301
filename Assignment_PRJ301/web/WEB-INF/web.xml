@@ -22,6 +22,15 @@
         <url-pattern>/student/viewAttendant</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>InstructorTimetableController</servlet-name>
+        <servlet-class>controller.instructor.TimetableController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InstructorTimetableController</servlet-name>
+        <url-pattern>/instructor/timetable</url-pattern>
+    </servlet-mapping>
+    
     <session-config>
         <session-timeout>
             30

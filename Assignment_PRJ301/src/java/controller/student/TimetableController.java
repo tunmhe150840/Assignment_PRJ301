@@ -56,7 +56,7 @@ public class TimetableController extends HttpServlet {
         request.setAttribute("slots", slots);
         
         SessionDBContext sesDB = new SessionDBContext();
-        ArrayList<Session> sessions = sesDB.filter(stdCode, from, to);
+        ArrayList<Session> sessions = sesDB.sessionOfStudent(stdCode, from, to);
         request.setAttribute("sessions", sessions);
         
         StudentDBContext stdDB = new StudentDBContext();
