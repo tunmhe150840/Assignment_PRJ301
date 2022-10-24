@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Attendant;
 import model.Course;
 import model.Group;
 import model.Instructor;
@@ -54,7 +55,7 @@ public class SessionDBContext extends DBContext<Session> {
                 session.setSessionID(rs.getInt("SessionID"));
                 session.setDate(rs.getDate("Date"));
                 Boolean attended = rs.getBoolean("Attended");
-                if(rs.wasNull()){
+                if (rs.wasNull()) {
                     attended = null;
                 }
                 session.setAttended(attended);
@@ -120,7 +121,7 @@ public class SessionDBContext extends DBContext<Session> {
                 session.setSessionID(rs.getInt("SessionID"));
                 session.setDate(rs.getDate("Date"));
                 Boolean attended = rs.getBoolean("Attended");
-                if(rs.wasNull()){
+                if (rs.wasNull()) {
                     attended = null;
                 }
                 session.setAttended(attended);
@@ -166,7 +167,46 @@ public class SessionDBContext extends DBContext<Session> {
 
     @Override
     public void update(Session model) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            connection.setAutoCommit(false);
+            String sql = "UPDATE [Session] SET Attended = 1 WHERE SessionID = ?";
+            PreparedStatement stm = connection.prepareStatement(sql);
+            stm.setInt(1, model.getSessionID());
+            stm.executeUpdate();
+
+            //remove old attandances
+            sql = "DELETE Attendant WHERE SessionID = ?";
+            PreparedStatement stm_delete = connection.prepareStatement(sql);
+            stm_delete.setInt(1, model.getSessionID());
+            stm_delete.executeUpdate();
+
+            //insert new attandances
+            for (Attendant att : model.getAttendances()) {
+                sql = "INSERT INTO Attendant \n"
+                        + "(StudentCode,SessionID,Status,RecordTime)\n"
+                        + "VALUES \n"
+                        + "(?,?,?,GETDATE())";
+                PreparedStatement stm_insert = connection.prepareStatement(sql);
+                stm_insert.setString(1, att.getStudent().getStudentCode());
+                stm_insert.setInt(2, model.getSessionID());
+                stm_insert.setBoolean(3, att.isStatus());
+                stm_insert.executeUpdate();
+            }
+            connection.commit();
+        } catch (SQLException ex) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex1) {
+                Logger.getLogger(SessionDBContext.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+            Logger.getLogger(SessionDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(SessionDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     @Override
@@ -175,8 +215,80 @@ public class SessionDBContext extends DBContext<Session> {
     }
 
     @Override
-    public Session get(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Session get(int sessionID) {
+        String sql = "SELECT s.SessionID,s.[Index],s.Date,s.Attended\n"
+                + "		,g.GroupID,g.GroupName\n"
+                + "		,r.RoomID,r.RoomName\n"
+                + "             ,ts.SlotID,ts.[Description]\n"
+                + "             ,i.InstructorCode,i.InstructorName\n"
+                + "             ,c.CourseCode,c.CourseName\n"
+                + "             ,st.StudentCode,st.FullName\n"
+                + "             ,ISNULL(a.Status,0) Status\n"
+                + "			FROM [Session] s\n"
+                + "                         INNER JOIN Room r ON r.RoomID = s.RoomID\n"
+                + "                         INNER JOIN TimeSlot ts ON ts.SlotID = s.SlotID\n"
+                + "                         INNER JOIN Instructor i ON i.InstructorCode = s.InstructorCode\n"
+                + "                         INNER JOIN [Group] g ON g.GroupID = s.GroupID\n"
+                + "                         INNER JOIN Course c ON c.CourseCode = g.CourseCode\n"
+                + "                         INNER JOIN [Group_Student] gs ON gs.GroupID = g.GroupID\n"
+                + "                         INNER JOIN Student st ON st.StudentCode = gs.StudentCode\n"
+                + "                         LEFT JOIN Attendant a ON st.StudentCode = a.StudentCode AND s.SessionID = a.SessionID\n"
+                + "                         WHERE s.SessionID = ?";
+
+        PreparedStatement stm;
+        try {
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, sessionID);
+            ResultSet rs = stm.executeQuery();
+            Session session = null;
+            while (rs.next()) {
+                if (session == null) {
+                    session = new Session();
+                    session.setSessionID(rs.getInt("SessionID"));
+                    session.setIndex(rs.getInt("Index"));
+                    session.setDate(rs.getDate("Date"));
+                    session.setAttended(rs.getBoolean("Attended"));
+
+                    Group group = new Group();
+                    group.setGroupID(rs.getInt("GroupID"));
+                    group.setGroupName(rs.getString("GroupName"));
+
+                    Course course = new Course();
+                    course.setCourseCode(rs.getString("CourseCode"));
+                    course.setCourseName(rs.getString("CourseName"));
+                    group.setCourse(course);
+
+                    Instructor instructor = new Instructor();
+                    instructor.setInstructorCode(rs.getString("InstructorCode"));
+                    instructor.setInstructorName(rs.getNString("InstructorName"));
+                    group.setSupervisor(instructor);
+                    session.setGroup(group);
+
+                    Room room = new Room();
+                    room.setRoomID(rs.getInt("RoomID"));
+                    room.setRoomName(rs.getString("RoomName"));
+                    session.setRoom(room);
+
+                    TimeSlot timeSlot = new TimeSlot();
+                    timeSlot.setSlotID(rs.getInt("SlotID"));
+                    timeSlot.setDescription(rs.getString("Description"));
+                    session.setTimeslot(timeSlot);
+                }
+
+                Student student = new Student();
+                student.setStudentCode(rs.getString("StudentCode"));
+                student.setFullName(rs.getNString("FullName"));
+
+                Attendant attendant = new Attendant();
+                attendant.setStatus(rs.getBoolean("Status"));
+                attendant.setStudent(student);
+                session.getAttendances().add(attendant);
+            }
+            return session;
+        } catch (SQLException ex) {
+            Logger.getLogger(SessionDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override

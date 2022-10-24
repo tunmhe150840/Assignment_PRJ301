@@ -98,4 +98,8 @@ public class Session {
         this.room = rooms;
     }
 
+    public Boolean getAttended() {
+        return attended;
+    }
+
 }

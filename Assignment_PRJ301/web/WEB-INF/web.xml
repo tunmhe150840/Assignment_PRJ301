@@ -31,6 +31,15 @@
         <url-pattern>/instructor/timetable</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>TakeAttController</servlet-name>
+        <servlet-class>controller.instructor.TakeAttController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TakeAttController</servlet-name>
+        <url-pattern>/instructor/takeAtt</url-pattern>
+    </servlet-mapping>
+    
     <session-config>
         <session-timeout>
             30
