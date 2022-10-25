@@ -4,12 +4,13 @@
  */
 package controller.instructor;
 
+import controller.auth.BaseRoleController;
 import dal.SessionDBContext;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import model.Account;
 import model.Attendant;
 import model.Session;
 import model.Student;
@@ -18,19 +19,10 @@ import model.Student;
  *
  * @author Admin
  */
-public class TakeAttController extends HttpServlet {
+public class TakeAttController extends BaseRoleController {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int sesid = Integer.parseInt(req.getParameter("id"));
-        SessionDBContext sesDB = new SessionDBContext();
-        Session ses = sesDB.get(sesid);
-        req.setAttribute("session", ses);
-        req.getRequestDispatcher("../WEB-INF/view/instructor/TakeAtt.jsp").forward(req, resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void processPost(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
         Session ses = new Session();
         ses.setSessionID(Integer.parseInt(req.getParameter("sesid")));
         String[] stdCodes = req.getParameterValues("stdCode");
@@ -45,6 +37,15 @@ public class TakeAttController extends HttpServlet {
         SessionDBContext db = new SessionDBContext();
         db.update(ses);
         resp.sendRedirect("takeAtt?id=" + ses.getSessionID());
+    }
+
+    @Override
+    protected void processGet(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
+        int sesid = Integer.parseInt(req.getParameter("id"));
+        SessionDBContext sesDB = new SessionDBContext();
+        Session ses = sesDB.get(sesid);
+        req.setAttribute("session", ses);
+        req.getRequestDispatcher("../WEB-INF/view/instructor/TakeAtt.jsp").forward(req, resp);
     }
 
 }

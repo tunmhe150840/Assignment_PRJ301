@@ -4,16 +4,17 @@
  */
 package controller.instructor;
 
+import controller.auth.BaseRoleController;
 import dal.InstructorDBContext;
 import dal.SessionDBContext;
 import dal.TimeSlotDBContext;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import model.Account;
 import model.Instructor;
 import model.Session;
 import model.TimeSlot;
@@ -23,7 +24,7 @@ import util.DateTimeHelper;
  *
  * @author Admin
  */
-public class TimetableController extends HttpServlet {
+public class TimetableController extends BaseRoleController {
 
     public void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -64,13 +65,14 @@ public class TimetableController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void processPost(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
         processRequest(req, resp);
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void processGet(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
         processRequest(req, resp);
+
     }
 
 }

@@ -40,6 +40,45 @@
         <url-pattern>/instructor/takeAtt</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>LoginController</servlet-name>
+        <servlet-class>controller.auth.LoginController</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>LoginController</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>LogoutController</servlet-name>
+        <servlet-class>controller.auth.LogoutController</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>LogoutController</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>InstructorHomeController</servlet-name>
+        <servlet-class>controller.instructor.HomeController</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>InstructorHomeController</servlet-name>
+        <url-pattern>/instructor/home</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>StudentHomeController</servlet-name>
+        <servlet-class>controller.student.HomeController</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>StudentHomeController</servlet-name>
+        <url-pattern>/student/home</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
