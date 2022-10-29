@@ -91,19 +91,21 @@ public class SessionDBContext extends DBContext<Session> {
         ArrayList<Session> sessions = new ArrayList<>();
         try {
             String sql = "Select s.SessionID,s.Date,s.Attended\n"
-                    + ",g.GroupID,g.GroupName,g.CourseCode\n"
-                    + ",st.StudentCode,st.FullName\n"
-                    + ",i.InstructorCode,i.InstructorName\n"
-                    + ",r.RoomID,r.RoomName\n"
-                    + ",t.SlotID,t.Description \n"
-                    + "from Session s\n"
-                    + "INNER JOIN [Group] g ON s.GroupID = g.GroupID\n"
-                    + "INNER JOIN Group_Student gs ON g.GroupID = gs.GroupID\n"
-                    + "INNER JOIN Student st ON gs.StudentCode = st.StudentCode\n"
-                    + "INNER JOIN Instructor i ON s.InstructorCode = i.InstructorCode\n"
-                    + "INNER JOIN Room r ON s.RoomID = r.RoomID\n"
-                    + "INNER JOIN TimeSlot t ON s.SlotID = t.SlotID\n"
-                    + "WHERE st.StudentCode = ? AND s.Date >=? AND s.Date<=?";
+                    + "                    ,g.GroupID,g.GroupName,g.CourseCode\n"
+                    + "                    ,st.StudentCode,st.FullName\n"
+                    + "                    ,i.InstructorCode,i.InstructorName\n"
+                    + "                    ,r.RoomID,r.RoomName\n"
+                    + "                    ,t.SlotID,t.Description \n"
+                    + "                     ,a.AttendantID,a.Status\n"
+                    + "                    from Session s\n"
+                    + "                    INNER JOIN [Group] g ON s.GroupID = g.GroupID\n"
+                    + "                    INNER JOIN Group_Student gs ON g.GroupID = gs.GroupID\n"
+                    + "                    INNER JOIN Student st ON gs.StudentCode = st.StudentCode\n"
+                    + "                    INNER JOIN Instructor i ON s.InstructorCode = i.InstructorCode\n"
+                    + "                    INNER JOIN Room r ON s.RoomID = r.RoomID\n"
+                    + "                    INNER JOIN TimeSlot t ON s.SlotID = t.SlotID\n"
+                    + "                    LEFT JOIN Attendant a ON s.SessionID = a.SessionID AND a.StudentCode = st.StudentCode\n"
+                    + "                  WHERE st.StudentCode = ? AND s.Date >= ? AND s.Date<= ?";
             PreparedStatement stm = connection.prepareStatement(sql);
             stm.setString(1, stdCode);
             stm.setDate(2, from);
@@ -118,6 +120,7 @@ public class SessionDBContext extends DBContext<Session> {
                 Instructor i = new Instructor();
                 Room r = new Room();
                 TimeSlot t = new TimeSlot();
+                Attendant att = new Attendant();
                 session.setSessionID(rs.getInt("SessionID"));
                 session.setDate(rs.getDate("Date"));
                 Boolean attended = rs.getBoolean("Attended");
@@ -149,7 +152,14 @@ public class SessionDBContext extends DBContext<Session> {
                 t.setSlotID(rs.getInt("SlotID"));
                 t.setDescription(rs.getString("Description"));
                 session.setTimeslot(t);
-
+                
+                att.setAttendantID(rs.getInt("AttendantID"));
+                Boolean status = rs.getBoolean("Status");
+                if (rs.wasNull()) {
+                    status = null;
+                }
+                att.setStatus(status);
+                session.getAttendances().add(att);
                 sessions.add(session);
 
             }
@@ -223,7 +233,7 @@ public class SessionDBContext extends DBContext<Session> {
                 + "             ,i.InstructorCode,i.InstructorName\n"
                 + "             ,c.CourseCode,c.CourseName\n"
                 + "             ,st.StudentCode,st.FullName\n"
-                + "             ,ISNULL(a.Status,0) Status\n"
+                + "             ,ISNULL(a.Status,0) Status, a.RecordTime\n"
                 + "			FROM [Session] s\n"
                 + "                         INNER JOIN Room r ON r.RoomID = s.RoomID\n"
                 + "                         INNER JOIN TimeSlot ts ON ts.SlotID = s.SlotID\n"
@@ -282,6 +292,7 @@ public class SessionDBContext extends DBContext<Session> {
                 Attendant attendant = new Attendant();
                 attendant.setStatus(rs.getBoolean("Status"));
                 attendant.setStudent(student);
+                attendant.setRecordTime(rs.getDate("RecordTime"));
                 session.getAttendances().add(attendant);
             }
             return session;

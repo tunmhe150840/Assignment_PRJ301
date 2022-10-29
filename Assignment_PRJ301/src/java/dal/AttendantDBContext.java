@@ -24,7 +24,7 @@ import model.TimeSlot;
 public class AttendantDBContext extends DBContext<Attendant> {
 
     public ArrayList<Attendant> list(String stdCode, String cCode) {
-        String sql = "Select a.AttendantID, a.Status, "
+        String sql = "Select a.AttendantID, a.Status, a.RecordTime"
                 + "s.SessionID,s.[Index],s.Date,"
                 + "r.RoomID,r.RoomName,"
                 + "ts.SlotID,ts.Description,"
@@ -54,7 +54,7 @@ public class AttendantDBContext extends DBContext<Attendant> {
                     status = null;
                 }
                 at.setStatus(status);
-                
+                at.setRecordTime(rs.getDate("RecordTime"));
                 s.setSessionID(rs.getInt("SessionID"));
                 s.setIndex(rs.getInt("Index"));
                 s.setDate(rs.getDate("Date"));

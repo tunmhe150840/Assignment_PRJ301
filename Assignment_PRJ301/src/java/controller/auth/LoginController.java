@@ -50,7 +50,8 @@ public class LoginController extends HttpServlet {
         AccountDBContext db = new AccountDBContext();
         Account account = db.get(username, password);
         if (account == null) {
-            response.getWriter().println("login failed!");
+            request.setAttribute("error", "Login failed");
+            request.getRequestDispatcher("WEB-INF/view/login.jsp").forward(request, response);
         } else {
             request.getSession().setAttribute("account", account);
             Role role = account.getRoles().get(0);
