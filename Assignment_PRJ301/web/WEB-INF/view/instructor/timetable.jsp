@@ -133,7 +133,7 @@
                                                         <c:forEach items="${requestScope.sessions}" var="ses">
                                                             <c:if test="${helper.compare(ses.date,d) eq 0 and (ses.timeslot.slotID eq slot.slotID)}">
 
-                                                                <a style="font-weight: bold;" href="takeAtt?id=${ses.sessionID}">${ses.group.groupName}-${ses.group.course.courseCode}</a>
+                                                                <a style="font-weight: bold;" href="takeAtt?insCode=${requestScope.ins.instructorCode}&id=${ses.sessionID}">${ses.group.groupName}-${ses.group.course.courseCode}</a>
                                                                 <br/>
                                                                 at ${ses.room.roomName}
                                                                 <c:if test="${ses.isAttended()}">

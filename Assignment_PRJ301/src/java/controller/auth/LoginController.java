@@ -7,6 +7,7 @@ package controller.auth;
 import dal.AccountDBContext;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,6 +54,19 @@ public class LoginController extends HttpServlet {
             request.setAttribute("error", "Login failed");
             request.getRequestDispatcher("WEB-INF/view/login.jsp").forward(request, response);
         } else {
+            if (request.getParameter("remember") != null) {
+                String remember = request.getParameter("remember");
+                System.out.println("remember : " + remember);
+                Cookie cUserName = new Cookie("cookuser", username.trim());
+                Cookie cPassword = new Cookie("cookpass", password.trim());
+                Cookie cRemember = new Cookie("cookrem", remember.trim());
+                cUserName.setMaxAge(60 * 60 * 24 * 15);// 15 days
+                cPassword.setMaxAge(60 * 60 * 24 * 15);
+                cRemember.setMaxAge(60 * 60 * 24 * 15);
+                response.addCookie(cUserName);
+                response.addCookie(cPassword);
+                response.addCookie(cRemember);
+            }
             request.getSession().setAttribute("account", account);
             Role role = account.getRoles().get(0);
             if (role != null) {

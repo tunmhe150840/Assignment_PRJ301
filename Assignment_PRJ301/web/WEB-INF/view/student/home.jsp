@@ -11,6 +11,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     </head>
     <body>
         <div class="container">
@@ -131,7 +132,7 @@
                                         margin: 3px;
                                     }
                                 </style>
-                                <<form action="" method="POST">
+                                <form action="" method="POST">
                                     <c:if test="${sessionScope.account ne null}">
                                         Hello Student: <b>${sessionScope.account.displayname}</b> <br/>
                                         <div class="col-md-8">

@@ -18,7 +18,7 @@ import model.Course;
  */
 public class CourseDBContext extends DBContext<Course> {
 
-    public ArrayList<Course> list(String stdCode) {
+    public ArrayList<Course> listCourseOfStudent(String stdCode) {
         String sql = "Select c.CourseCode,c.CourseName from [Group] g\n"
                 + "INNER JOIN Group_Student gs ON g.GroupID = gs.GroupID\n"
                 + "INNER JOIN Course c ON g.CourseCode = c.CourseCode\n"
@@ -28,7 +28,30 @@ public class CourseDBContext extends DBContext<Course> {
             PreparedStatement stm = connection.prepareStatement(sql);
             stm.setString(1, stdCode);
             ResultSet rs = stm.executeQuery();
-            while (rs.next()) {                
+            while (rs.next()) {
+                Course c = new Course();
+                c.setCourseCode(rs.getString("CourseCode"));
+                c.setCourseName(rs.getString("CourseName"));
+                courses.add(c);
+            }
+            return courses;
+        } catch (SQLException ex) {
+            Logger.getLogger(CourseDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public ArrayList<Course> listCourseOfInstructor(String insCode) {
+        String sql = "Select distinct c.CourseCode,c.CourseName from [Group] g\n"
+                + "                INNER JOIN Instructor i ON g.InstructorCode = i.InstructorCode\n"
+                + "                INNER JOIN Course c ON g.CourseCode = c.CourseCode\n"
+                + "                WHERE i.InstructorCode = ?";
+        ArrayList<Course> courses = new ArrayList<>();
+        try {
+            PreparedStatement stm = connection.prepareStatement(sql);
+            stm.setString(1, insCode);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
                 Course c = new Course();
                 c.setCourseCode(rs.getString("CourseCode"));
                 c.setCourseName(rs.getString("CourseName"));

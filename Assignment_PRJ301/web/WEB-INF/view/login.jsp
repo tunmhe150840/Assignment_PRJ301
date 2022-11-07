@@ -4,6 +4,7 @@
     Author     : sonnt
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -84,8 +85,19 @@
                 <h3 style="color: red">${requestScope.error}</h3>
                 <h3 style="color: green">${requestScope.logout}</h3>
                 <form action="login" method="POST">
-                    Username: <input type="text" name="username"/> <br/>
-                    password: <input type="password" name="password" /> <br/>
+                    <p>
+                        <label>Username:</label> <input type="text" name="username" autocomplete="off" value="${cookie.cookuser.value}"/>
+                    </p>
+                    <p>
+                        <label>Password:</label> <input type="password" name="password"  autocomplete="off" value="${cookie.cookpass.value}"/>
+                    </p>
+                    <p>
+                        <label>Remember:</label> <input type="checkbox" name="remember" value="1"
+                                                        <c:if test="${cookie.cookrem.value  ne null}">
+                                                            checked="checked"
+                                                        </c:if>
+                                                        >
+                    </p>
                     <input type="submit" value="Login" /> 
                 </form>
             </div>

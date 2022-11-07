@@ -24,7 +24,7 @@ import model.TimeSlot;
 public class AttendantDBContext extends DBContext<Attendant> {
 
     public ArrayList<Attendant> list(String stdCode, String cCode) {
-        String sql = "Select a.AttendantID, a.Status, a.RecordTime"
+        String sql = "Select a.AttendantID, a.Status, a.RecordTime,"
                 + "s.SessionID,s.[Index],s.Date,"
                 + "r.RoomID,r.RoomName,"
                 + "ts.SlotID,ts.Description,"
@@ -33,7 +33,8 @@ public class AttendantDBContext extends DBContext<Attendant> {
                 + "INNER JOIN [Group] g ON s.GroupID = g.GroupID\n"
                 + "INNER JOIN TimeSlot ts ON s.SlotID = ts.SlotID\n"
                 + "INNER JOIN Room r ON s.RoomID = r.RoomID\n"
-                + "WHERE a.StudentCode = ? AND g.CourseCode = ? ";
+                + "WHERE a.StudentCode = ? AND g.CourseCode = ? "
+                + "Order by s.[Index] asc";
         ArrayList<Attendant> attendants = new ArrayList<>();
         try {
             PreparedStatement stm = connection.prepareStatement(sql);

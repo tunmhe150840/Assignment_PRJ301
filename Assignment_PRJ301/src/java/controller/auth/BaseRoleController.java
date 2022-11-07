@@ -38,7 +38,7 @@ public abstract class BaseRoleController extends BaseAuthenticationController {
         if (isAuthorized(req)) {
             processPost(req, resp, (Account) req.getSession().getAttribute("account"));
         } else {
-            resp.getWriter().println("access denied!");
+            resp.getWriter().println("Access denied!");
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class BaseRoleController extends BaseAuthenticationController {
         if (isAuthorized(req)) {
             processGet(req, resp, (Account) req.getSession().getAttribute("account"));
         } else {
-            resp.getWriter().println("access denied!");
+            resp.getWriter().println("Access denied!");
         }
     }
 

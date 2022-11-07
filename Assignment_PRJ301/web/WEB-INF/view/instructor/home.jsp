@@ -137,6 +137,7 @@
                                     <div class="col-md-8">
                                         <span style="width: 200px;" class="label label-default btn-warning"><b>Function </b></span></br>
                                         <a href="instructor/timetable?insCode=${account.username}">Timetable</a><br/>
+                                        <a href="instructor/viewAttendant?insCode=${sessionScope.account.username}">View Attendant</a> <br/>
                                     </div>
                                 </c:if>
                                 <c:if test="${sessionScope.account eq null}">

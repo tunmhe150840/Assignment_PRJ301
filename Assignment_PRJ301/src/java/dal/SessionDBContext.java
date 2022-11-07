@@ -26,6 +26,69 @@ import model.TimeSlot;
  */
 public class SessionDBContext extends DBContext<Session> {
 
+    public ArrayList<Session> sessionOfInstructor(String insCode, String cCode, int gCode) {
+        ArrayList<Session> sessions = new ArrayList<>();
+        try {
+            String sql = "Select s.SessionID,s.[Index],s.Date,s.Attended\n"
+                    + ",g.GroupID,g.GroupName,g.CourseCode\n"
+                    + ",i.InstructorCode,i.InstructorName\n"
+                    + ",r.RoomID,r.RoomName\n"
+                    + ",t.SlotID,t.Description \n"
+                    + "from Session s\n"
+                    + "INNER JOIN [Group] g ON s.GroupID = g.GroupID\n"
+                    + "INNER JOIN Instructor i ON s.InstructorCode = i.InstructorCode\n"
+                    + "INNER JOIN Room r ON s.RoomID = r.RoomID\n"
+                    + "INNER JOIN TimeSlot t ON s.SlotID = t.SlotID\n"
+                    + "WHERE g.InstructorCode = ? AND g.CourseCode = ? AND g.GroupID = ? "
+                    + "ORDER BY s.[Index] asc";
+            PreparedStatement stm = connection.prepareStatement(sql);
+            stm.setString(1, insCode);
+            stm.setString(2, cCode);
+            stm.setInt(3, gCode);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                Session session = new Session();
+                Group g = new Group();
+                Course c = new Course();
+                Instructor i = new Instructor();
+                Room r = new Room();
+                TimeSlot t = new TimeSlot();
+                session.setSessionID(rs.getInt("SessionID"));
+                session.setDate(rs.getDate("Date"));
+                session.setIndex(rs.getInt("Index"));
+                Boolean attended = rs.getBoolean("Attended");
+                if (rs.wasNull()) {
+                    attended = null;
+                }
+                session.setAttended(attended);
+
+                i.setInstructorCode(rs.getString("InstructorCode"));
+                i.setInstructorName(rs.getNString("InstructorName"));
+                session.setInstructor(i);
+
+                c.setCourseCode(rs.getString("CourseCode"));
+                g.setCourse(c);
+
+                g.setGroupID(rs.getInt("GroupID"));
+                g.setGroupName(rs.getString("GroupName"));
+                session.setGroup(g);
+
+                r.setRoomID(rs.getInt("RoomID"));
+                r.setRoomName(rs.getString("RoomName"));
+                session.setRoom(r);
+
+                t.setSlotID(rs.getInt("SlotID"));
+                t.setDescription(rs.getString("Description"));
+                session.setTimeslot(t);
+
+                sessions.add(session);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SessionDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sessions;
+    }
+
     public ArrayList<Session> sessionOfInstructor(String insCode, Date from, Date to) {
         ArrayList<Session> sessions = new ArrayList<>();
         try {
@@ -152,7 +215,7 @@ public class SessionDBContext extends DBContext<Session> {
                 t.setSlotID(rs.getInt("SlotID"));
                 t.setDescription(rs.getString("Description"));
                 session.setTimeslot(t);
-                
+
                 att.setAttendantID(rs.getInt("AttendantID"));
                 Boolean status = rs.getBoolean("Status");
                 if (rs.wasNull()) {

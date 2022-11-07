@@ -83,6 +83,7 @@
                         </c:forEach>
                     </tbody>
                 </table>
+                <input type="hidden" name="insCode" value="${requestScope.session.group.supervisor.instructorCode}">
                 <input type="submit" value="Save"/>
             </form>
         </div>

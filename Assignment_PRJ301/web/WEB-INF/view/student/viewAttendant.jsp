@@ -136,7 +136,9 @@
                                                         <th>Status</th>
                                                     </tr>
                                                 </thead>
-
+                                                <c:if test="${requestScope.listAtt eq null}">
+                                                    MDFKED
+                                                </c:if>
                                                 <c:forEach items="${requestScope.listAtt}" var="att">
                                                     <tr>
                                                         <td>${att.session.index}</td>
